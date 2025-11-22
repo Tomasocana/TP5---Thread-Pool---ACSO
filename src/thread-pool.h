@@ -16,6 +16,9 @@
 #include <vector>      // for vector
 #include "Semaphore.h" // for Semaphore
 
+#include <deque>       // para la cola de tareas
+#include <atomic>      // para el contador de tareas
+
 using namespace std;
 
 
@@ -31,9 +34,10 @@ using namespace std;
 typedef struct worker {
     thread ts;
     function<void(void)> thunk;
-    /**
-     * Complete the definition of the worker_t struct here...
-     **/
+
+    bool free = true;
+    Semaphore work; // Semaforo para indicar que hay trabajo para el worker
+    int workerId;  // ID del worker
 } worker_t;
 
 class ThreadPool {
@@ -74,6 +78,13 @@ class ThreadPool {
     vector<worker_t> wts;                   // worker thread handles. you may want to change/remove this
     bool done;                              // flag to indicate the pool is being destroyed
     mutex queueLock;                        // mutex to protect the queue of tasks
+
+    deque <function<void(void)>> taskQueue; // Cola de tareas
+    Semaphore tasksAvailable;               // Semaforo para indicar que hay tareas disponibles
+    Semaphore freeWorker;                   // Semaforo para indicar que hay por lo menos 1 trabajador libre
+
+    atomic<int> tasksInProgress;                    // Contador de tareas en progreso
+    Semaphore tasksDone;                    // Semaforo para indicar que todas las tareas han sido completadas
 
     /* It is incomplete, there should be more private variables to manage the structures... 
     * *

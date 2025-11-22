@@ -1,17 +1,31 @@
-# Compiler settings - Can change to clang++ if preferred
+# Compiler settings
 CXX = g++
 CXXFLAGS = -std=c++11 -Wall -pthread -g
 
-# Build targets
-TARGET = threadpool
-SRC = thread-pool.cc Semaphore.cc main.cc
+# Dependencias comunes (Tu librería)
+# Estos archivos se usan en TODOS los tests
+DEPS = thread-pool.cc Semaphore.cc
 
-# Link the target with object files
-$(TARGET): $(SRC)
-	$(CXX) $(CXXFLAGS) -o $@ $^
+# Nombres de los ejecutables que queremos crear
+TARGETS = maintest tpcustom tptest
 
-# Clean up build artifacts
+# Regla "all": Si escribes 'make', compila todo
+all: $(TARGETS)
+
+# 1. Regla para el test principal (main.cc)
+maintest: main.cc $(DEPS)
+	$(CXX) $(CXXFLAGS) -o maintest main.cc $(DEPS)
+
+# 2. Regla para el test custom (tpcustomtest.cc)
+tpcustom: tpcustomtest.cc $(DEPS)
+	$(CXX) $(CXXFLAGS) -o tpcustom tpcustomtest.cc $(DEPS)
+
+# 3. Regla para el test oficial (tptest.cc)
+tptest: tptest.cc $(DEPS)
+	$(CXX) $(CXXFLAGS) -o tptest tptest.cc $(DEPS)
+
+# Limpieza
 clean:
-	rm -f $(TARGET) $(OBJ)
+	rm -f $(TARGETS)
 
 .PHONY: all clean
