@@ -1,3 +1,5 @@
+# Cambios del makefile: "make" ejecuta los 3 tests y genera 3 ejecutables distintos para poder comprobar todos juntos 
+
 # Compiler settings
 CXX = g++
 CXXFLAGS = -std=c++11 -Wall -pthread -g
